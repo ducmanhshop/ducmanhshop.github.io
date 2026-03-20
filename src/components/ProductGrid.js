@@ -1,10 +1,13 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import ProductCard from './ProductCard';
 
 export default function ProductGrid() {
   const { products, currentCategory, setCurrentCategory, searchTerm } = useApp();
+  const gridRef = useRef(null);
+  const [revealed, setRevealed] = useState(false);
 
   const categories = ['all', 'design', 'ai', 'entertainment', 'office'];
   const categoryLabels = { all: 'Tất cả', design: 'Thiết kế', ai: 'AI Tool', entertainment: 'Giải trí', office: 'Văn phòng' };
@@ -13,6 +16,22 @@ export default function ProductGrid() {
     (currentCategory === 'all' || p.category === currentCategory) &&
     p.name.toLowerCase().includes((searchTerm || '').toLowerCase())
   );
+
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setRevealed(true);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.05, rootMargin: '0px 0px -40px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <>
@@ -25,7 +44,7 @@ export default function ProductGrid() {
           <button
             key={cat}
             onClick={() => setCurrentCategory(cat)}
-            className={`filter-btn whitespace-nowrap px-5 md:px-6 py-2.5 rounded-full text-sm font-bold transition-all btn-press ${
+            className={`filter-btn whitespace-nowrap px-5 md:px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 btn-press ${
               currentCategory === cat
                 ? 'bg-[#1d1d1f] text-white shadow-md'
                 : 'bg-transparent text-gray-600 border border-black/10 hover:border-black/30'
@@ -46,9 +65,16 @@ export default function ProductGrid() {
           <button onClick={() => setCurrentCategory('all')} className="px-6 py-2.5 bg-gray-100 rounded-full text-[#1d1d1f] font-bold hover:bg-gray-200 transition-colors btn-press">Xem tất cả</button>
         </div>
       ) : (
-        <div id="product-grid" className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-16">
+        <div ref={gridRef} id="product-grid" className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-16">
           {filtered.map((p, index) => (
-            <div key={p.id} className="animate-fade-up" style={{ animationDelay: `${index * 50}ms` }}>
+            <div
+              key={p.id}
+              style={{
+                opacity: revealed ? 1 : 0,
+                transform: revealed ? 'translate3d(0,0,0)' : 'translate3d(0,30px,0)',
+                transition: `opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${index * 60}ms, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${index * 60}ms`,
+              }}
+            >
               <ProductCard product={p} />
             </div>
           ))}

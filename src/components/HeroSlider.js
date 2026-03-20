@@ -8,7 +8,7 @@ const slides = [
   {
     badge: 'KHÁM PHÁ NGAY',
     badgeClass: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    title: <>Kho Tài Khoản<br/>Premium Đa Dạng</>,
+    title: <>Kho Tài Khoản<br />Premium Đa Dạng</>,
     desc: 'Trải nghiệm các dịch vụ giải trí, thiết kế và công cụ AI hàng đầu thế giới với tài khoản chính hãng, hoạt động mượt mà và bảo mật cao.',
     btnText: 'Xem danh mục',
     btnIcon: <ArrowRight className="w-4 h-4" />,
@@ -19,7 +19,7 @@ const slides = [
   {
     badge: 'CAM KẾT CHẤT LƯỢNG',
     badgeClass: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-    title: <>Giá Siêu Tốt<br/>& Bảo Hành Trọn Đời</>,
+    title: <>Giá Siêu Tốt<br />& Bảo Hành Trọn Đời</>,
     desc: 'Tiết kiệm chi phí tối đa so với giá gốc. Hỗ trợ bảo hành tận tâm 1 đổi 1 trong suốt thời gian sử dụng.',
     btnText: 'Xem chính sách',
     btnIcon: <ShieldCheck className="w-4 h-4" />,
@@ -30,7 +30,7 @@ const slides = [
   {
     badge: 'TỰ ĐỘNG HOÁ 24/7',
     badgeClass: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-    title: <>Thanh Toán Xong<br/>Nhận Tài Khoản Liền</>,
+    title: <>Thanh Toán Xong<br />Nhận Tài Khoản Liền</>,
     desc: 'Hệ thống xử lý thông minh giao tài khoản tự động ngay lập tức.',
     btnText: 'Mua sắm ngay',
     btnIcon: <Zap className="w-4 h-4" />,

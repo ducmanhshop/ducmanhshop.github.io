@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useCallback } from 'react';
+import useScrollReveal from '@/lib/useScrollReveal';
 import { FEEDBACKS } from '@/lib/config';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -9,6 +10,7 @@ const starSVG = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" 
 export default function FeedbackCarousel() {
   const trackRef = useRef(null);
   const autoScrollRef = useRef(null);
+  const sectionRef = useScrollReveal({ threshold: 0.1 });
 
   const infiniteFeedbacks = Array(6).fill(FEEDBACKS).flat();
 
@@ -40,7 +42,7 @@ export default function FeedbackCarousel() {
   const resumeAutoScroll = () => { autoScrollRef.current = setInterval(() => scrollFeedback(1), 4000); };
 
   return (
-    <section className="py-8">
+    <section ref={sectionRef} className="py-8 scroll-reveal">
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-4xl font-black text-[#1d1d1f] tracking-tighter">Khách hàng nói gì về chúng tôi</h2>
         <p className="text-gray-500 font-medium mt-2 text-sm">Hàng trăm khách hàng đã tin tưởng sử dụng dịch vụ của MDM Store</p>
@@ -48,13 +50,13 @@ export default function FeedbackCarousel() {
       </div>
 
       <div className="relative group max-w-full mx-auto" onMouseEnter={pauseAutoScroll} onMouseLeave={resumeAutoScroll}>
-        <button onClick={() => scrollFeedback(-1)} className="absolute left-0 top-1/2 -translate-y-1/2 -ml-5 z-10 w-12 h-12 bg-white border border-black/10 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.1)] items-center justify-center text-[#1d1d1f] opacity-0 group-hover:opacity-100 transition-all hidden md:flex hover:scale-110">
+        <button onClick={() => scrollFeedback(-1)} className="absolute left-0 top-1/2 -translate-y-1/2 -ml-5 z-10 w-12 h-12 bg-white border border-black/10 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.1)] items-center justify-center text-[#1d1d1f] opacity-0 group-hover:opacity-100 transition-all duration-400 hidden md:flex hover:scale-110">
           <ChevronLeft className="w-6 h-6" />
         </button>
 
         <div ref={trackRef} className="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 pt-2 px-4 md:px-2 scroll-smooth">
           {infiniteFeedbacks.map((f, i) => (
-            <div key={i} className="snap-center snap-always shrink-0 w-[85vw] md:w-[calc(33.3333%-16px)] bg-white p-5 md:p-6 rounded-[24px] shadow-sm border border-gray-200 flex flex-col">
+            <div key={i} className="snap-center snap-always shrink-0 w-[85vw] md:w-[calc(33.3333%-16px)] bg-white p-5 md:p-6 rounded-[24px] shadow-sm border border-gray-200 flex flex-col feedback-card">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#1d1d1f] text-white flex items-center justify-center font-black text-lg">{f.name.charAt(0)}</div>
@@ -74,7 +76,7 @@ export default function FeedbackCarousel() {
           ))}
         </div>
 
-        <button onClick={() => scrollFeedback(1)} className="absolute right-0 top-1/2 -translate-y-1/2 -mr-5 z-10 w-12 h-12 bg-white border border-black/10 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.1)] items-center justify-center text-[#1d1d1f] opacity-0 group-hover:opacity-100 transition-all hidden md:flex hover:scale-110">
+        <button onClick={() => scrollFeedback(1)} className="absolute right-0 top-1/2 -translate-y-1/2 -mr-5 z-10 w-12 h-12 bg-white border border-black/10 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.1)] items-center justify-center text-[#1d1d1f] opacity-0 group-hover:opacity-100 transition-all duration-400 hidden md:flex hover:scale-110">
           <ChevronRight className="w-6 h-6" />
         </button>
       </div>

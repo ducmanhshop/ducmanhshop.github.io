@@ -3,21 +3,28 @@
 import { useEffect, useState } from 'react';
 
 export default function PageLoader() {
-  const [visible, setVisible] = useState(true);
+  const [phase, setPhase] = useState('loading'); // loading -> fadeOut -> hidden
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(false), 1500);
-    return () => clearTimeout(timer);
+    const fadeTimer = setTimeout(() => setPhase('fadeOut'), 1200);
+    const hideTimer = setTimeout(() => setPhase('hidden'), 1900);
+    return () => { clearTimeout(fadeTimer); clearTimeout(hideTimer); };
   }, []);
 
-  if (!visible) return null;
+  if (phase === 'hidden') return null;
 
   return (
     <div
       className="fixed inset-0 z-[100] bg-[#FAFAFC] flex flex-col items-center justify-center"
-      style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.7s', pointerEvents: visible ? 'auto' : 'none' }}
+      style={{
+        opacity: phase === 'fadeOut' ? 0 : 1,
+        transform: phase === 'fadeOut' ? 'scale(1.04)' : 'scale(1)',
+        filter: phase === 'fadeOut' ? 'blur(8px)' : 'blur(0px)',
+        transition: 'opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
+        pointerEvents: phase === 'fadeOut' ? 'none' : 'auto',
+      }}
     >
-      <div className="w-[84px] h-[84px] mb-8 flex items-center justify-center">
+      <div className="w-[84px] h-[84px] mb-8 flex items-center justify-center" style={{ animation: 'gentlePulse 2s ease-in-out infinite' }}>
         <img
           src="/logo.webp"
           alt="MDM Store"
