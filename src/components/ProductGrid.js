@@ -65,8 +65,8 @@ export default function ProductGrid() {
               key={p.id}
               style={{
                 opacity: revealed ? 1 : 0,
-                transform: revealed ? 'translate3d(0,0,0)' : 'translate3d(0,30px,0)',
-                transition: `opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${index * 60}ms, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${index * 60}ms`,
+                transform: revealed ? 'translate3d(0,0,0)' : 'translate3d(0,20px,0)',
+                transition: `opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${index * 50}ms, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${index * 50}ms`,
               }}
             >
               <ProductCard product={p} />

@@ -1,24 +1,19 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 /**
- * Custom hook for smooth modal mount/unmount animations.
+ * Custom hook for smooth modal mount/unmount animations with body scroll lock.
  * 
- * Instead of using CSS `hidden` (display:none) which kills close animations,
- * this hook manages a two-phase lifecycle:
- * 
- * 1. OPEN: mount element first → next frame add `open` class → animation plays
- * 2. CLOSE: remove `open` class → wait for animation → unmount element
- * 
- * @param {boolean} isOpen - The open/close state from context
- * @param {number} duration - Animation duration in ms (default 400)
- * @returns {{ mounted: boolean, active: boolean }}
+ * Lifecycle:
+ * 1. OPEN: mount → next frame add `open` class → lock body scroll
+ * 2. CLOSE: remove `open` class → wait for animation → unmount → unlock body scroll
  */
-export function useModalAnimation(isOpen, duration = 400) {
+export function useModalAnimation(isOpen, duration = 380) {
   const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState(false);
   const timeoutRef = useRef(null);
+  const scrollYRef = useRef(0);
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -27,29 +22,41 @@ export function useModalAnimation(isOpen, duration = 400) {
     }
 
     if (isOpen) {
-      // Phase 1: Mount immediately
+      // Save scroll position and lock body
+      scrollYRef.current = window.scrollY;
+      document.body.classList.add('modal-open');
+      document.body.style.top = `-${scrollYRef.current}px`;
+      
       setMounted(true);
-      // Phase 2: Activate on next frame for CSS transition to work
-      timeoutRef.current = setTimeout(() => {
+      // Double rAF ensures the browser has painted the initial state
+      requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setActive(true);
         });
-      }, 10);
+      });
     } else {
-      // Phase 1: Deactivate (triggers close animation)
       setActive(false);
-      // Phase 2: Unmount after animation completes
       timeoutRef.current = setTimeout(() => {
         setMounted(false);
+        // Unlock body scroll and restore position
+        document.body.classList.remove('modal-open');
+        document.body.style.top = '';
+        window.scrollTo(0, scrollYRef.current);
       }, duration);
     }
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [isOpen, duration]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('modal-open');
+      document.body.style.top = '';
+    };
+  }, []);
 
   return { mounted, active };
 }

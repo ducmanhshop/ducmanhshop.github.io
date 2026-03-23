@@ -44,32 +44,38 @@ export default function HeroSlider() {
   const { setWarrantyOpen } = useApp();
   const [current, setCurrent] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const trackRef = useRef(null);
+  const timerRef = useRef(null);
 
   const goTo = useCallback((idx) => {
     if (isTransitioning || idx === current) return;
     setIsTransitioning(true);
     setCurrent(idx);
-    setTimeout(() => setIsTransitioning(false), 700);
   }, [current, isTransitioning]);
 
   const next = useCallback(() => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrent(p => (p + 1) % slides.length);
-    setTimeout(() => setIsTransitioning(false), 700);
   }, [isTransitioning]);
 
   const prev = useCallback(() => {
     if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrent(p => (p - 1 + slides.length) % slides.length);
-    setTimeout(() => setIsTransitioning(false), 700);
   }, [isTransitioning]);
 
+  // Reset transitioning after animation
   useEffect(() => {
-    const interval = setInterval(next, 5000);
-    return () => clearInterval(interval);
+    if (isTransitioning) {
+      const t = setTimeout(() => setIsTransitioning(false), 650);
+      return () => clearTimeout(t);
+    }
+  }, [isTransitioning, current]);
+
+  // Auto-advance
+  useEffect(() => {
+    timerRef.current = setInterval(next, 5000);
+    return () => clearInterval(timerRef.current);
   }, [next]);
 
   const handleAction = (action) => {
@@ -84,20 +90,25 @@ export default function HeroSlider() {
 
   return (
     <section className="mb-10 md:mb-12 relative w-full h-[400px] md:h-[500px] rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgb(0,0,0,0.1)] group border border-black/5">
-      {/* Slide Track — horizontal translate */}
+      {/* Slide Track */}
       <div
-        ref={trackRef}
-        className="flex h-full"
+        className="flex h-full will-change-transform"
         style={{
           width: `${slides.length * 100}%`,
           transform: `translate3d(-${current * (100 / slides.length)}%, 0, 0)`,
-          transition: 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)',
+          transition: 'transform 0.65s cubic-bezier(0.25, 1, 0.5, 1)',
         }}
       >
         {slides.map((slide, i) => (
           <div key={i} className="relative h-full flex items-center" style={{ width: `${100 / slides.length}%` }}>
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent z-10"></div>
-            <img src={slide.image} className="absolute inset-0 w-full h-full object-cover" alt="" loading={i === 0 ? 'eager' : 'lazy'} />
+            <img
+              src={slide.image}
+              className="absolute inset-0 w-full h-full object-cover"
+              alt=""
+              loading={i === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
             <div className="relative z-20 px-8 md:px-16 max-w-2xl">
               <span className={`inline-block py-1 px-3.5 rounded-full text-[11px] font-bold border mb-5 backdrop-blur-md tracking-wider ${slide.badgeClass}`}>{slide.badge}</span>
               <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter leading-[1.1]">{slide.title}</h2>
@@ -109,17 +120,19 @@ export default function HeroSlider() {
           </div>
         ))}
       </div>
+
       {/* Dots */}
       <div className="absolute z-30 bottom-3 left-1/2 -translate-x-1/2 flex gap-2.5 items-center">
         {slides.map((_, i) => (
-          <button key={i} onClick={() => goTo(i)} className={`slide-dot rounded-full transition-all duration-400 ${i === current ? 'w-8 h-2.5 bg-white shadow-md' : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/80 backdrop-blur-sm'}`}></button>
+          <button key={i} onClick={() => goTo(i)} className={`slide-dot rounded-full ${i === current ? 'w-8 h-2.5 bg-white shadow-md' : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/70'}`}></button>
         ))}
       </div>
+
       {/* Arrows */}
-      <button onClick={prev} className="absolute z-30 top-1/2 -translate-y-1/2 left-4 md:left-6 w-12 h-12 rounded-full bg-black/20 text-white backdrop-blur-md border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-black/40 hover:scale-110">
+      <button onClick={prev} className="absolute z-30 top-1/2 -translate-y-1/2 left-4 md:left-6 w-12 h-12 rounded-full bg-black/20 text-white backdrop-blur-md border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/40 active:scale-90">
         <ChevronLeft className="w-6 h-6" />
       </button>
-      <button onClick={next} className="absolute z-30 top-1/2 -translate-y-1/2 right-4 md:right-6 w-12 h-12 rounded-full bg-black/20 text-white backdrop-blur-md border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-black/40 hover:scale-110">
+      <button onClick={next} className="absolute z-30 top-1/2 -translate-y-1/2 right-4 md:right-6 w-12 h-12 rounded-full bg-black/20 text-white backdrop-blur-md border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black/40 active:scale-90">
         <ChevronRight className="w-6 h-6" />
       </button>
     </section>
