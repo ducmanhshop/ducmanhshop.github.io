@@ -13,8 +13,6 @@ export function AppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [cart, setCart] = useState([]);
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'product' | 'admin'
-  const [currentProductId, setCurrentProductId] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [currentCategory, setCurrentCategory] = useState('all');
@@ -24,7 +22,6 @@ export function AppProvider({ children }) {
   // Modal states
   const [cartOpen, setCartOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -115,13 +112,6 @@ export function AppProvider({ children }) {
 
   const clearCart = useCallback(() => setCart([]), []);
 
-  // Navigation
-  const navigateTo = useCallback((view, productId = null) => {
-    setCurrentView(view);
-    setCurrentProductId(productId);
-    if (typeof window !== 'undefined') window.scrollTo(0, 0);
-  }, []);
-
   // Init
   useEffect(() => {
     const init = async () => {
@@ -136,14 +126,12 @@ export function AppProvider({ children }) {
   const value = {
     products, currentUser, setCurrentUser, isAdmin, setIsAdmin,
     cart, setCart, addToCart, changeQty, clearCart,
-    currentView, currentProductId, navigateTo,
     toastMessage, toastVisible, showToast,
     currentCategory, setCurrentCategory,
     searchTerm, setSearchTerm,
     isLoading,
     cartOpen, setCartOpen,
     paymentOpen, setPaymentOpen,
-    authOpen, setAuthOpen,
     profileOpen, setProfileOpen,
     settingsOpen, setSettingsOpen,
     searchOpen, setSearchOpen,

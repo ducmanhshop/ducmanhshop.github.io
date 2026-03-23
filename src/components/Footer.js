@@ -3,17 +3,18 @@
 import { useApp } from '@/context/AppContext';
 import useScrollReveal from '@/lib/useScrollReveal';
 import { Phone, Mail, MessageCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Footer() {
-  const { navigateTo, setProfileOpen, setWarrantyOpen, setTermsOpen } = useApp();
+  const { setProfileOpen, setWarrantyOpen, setTermsOpen } = useApp();
   const ref = useScrollReveal({ threshold: 0.1 });
 
   return (
     <footer ref={ref} className="scroll-reveal bg-white/80 backdrop-blur-lg border-t border-black/5 pt-8 md:pt-10 pb-24 md:pb-10 transition-colors duration-500 relative z-30 mt-6 md:mt-10">
       <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-5xl">
         <div className="flex flex-wrap justify-center gap-x-6 md:gap-x-8 gap-y-3 mb-8">
-          <button onClick={() => navigateTo('home')} className="text-[13px] md:text-sm text-gray-500 hover:text-[#1d1d1f] font-bold transition-colors duration-300">Trang chủ</button>
-          <button onClick={() => navigateTo('home')} className="text-[13px] md:text-sm text-gray-500 hover:text-[#1d1d1f] font-bold transition-colors duration-300">Sản phẩm</button>
+          <Link href="/" className="text-[13px] md:text-sm text-gray-500 hover:text-[#1d1d1f] font-bold transition-colors duration-300">Trang chủ</Link>
+          <Link href="/" className="text-[13px] md:text-sm text-gray-500 hover:text-[#1d1d1f] font-bold transition-colors duration-300">Sản phẩm</Link>
           <button onClick={() => setProfileOpen(true)} className="text-[13px] md:text-sm text-gray-500 hover:text-[#1d1d1f] font-bold transition-colors duration-300">Tra cứu đơn</button>
           <button onClick={() => setWarrantyOpen(true)} className="text-[13px] md:text-sm text-gray-500 hover:text-[#1d1d1f] font-bold transition-colors duration-300">Bảo hành</button>
           <button onClick={() => setTermsOpen(true)} className="text-[13px] md:text-sm text-gray-500 hover:text-[#1d1d1f] font-bold transition-colors duration-300">Điều khoản</button>

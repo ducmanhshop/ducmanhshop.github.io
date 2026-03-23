@@ -1,5 +1,8 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { AppProvider } from '@/context/AppContext';
+import SharedLayout from '@/components/SharedLayout';
+import PageLoader from '@/components/PageLoader';
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
@@ -23,7 +26,12 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
       </head>
       <body className={`${inter.variable} font-sans bg-transparent text-[#1d1d1f] antialiased overflow-x-hidden selection:bg-black selection:text-white transition-colors duration-300 relative`}>
-        {children}
+        <AppProvider>
+          <PageLoader />
+          <SharedLayout>
+            {children}
+          </SharedLayout>
+        </AppProvider>
       </body>
     </html>
   );

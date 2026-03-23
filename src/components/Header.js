@@ -3,10 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Search, ShoppingBag, User, MessageCircle } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
-  const { cart, setCartOpen, navigateTo, setSearchTerm, currentCategory, setCurrentCategory, products, currentUser, setAuthOpen, setProfileOpen } = useApp();
+  const { cart, setCartOpen, setSearchTerm, currentUser, setProfileOpen } = useApp();
   const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const name = currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0] || '';
@@ -20,7 +23,7 @@ export default function Header() {
 
   const handleDesktopSearch = (e) => {
     setSearchTerm(e.target.value);
-    navigateTo('home');
+    router.push('/');
   };
 
   return (
@@ -28,7 +31,7 @@ export default function Header() {
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[70px] md:h-[80px]">
           {/* Logo */}
-          <div className="flex items-center cursor-pointer group shrink-0" onClick={() => navigateTo('home')}>
+          <Link href="/" className="flex items-center cursor-pointer group shrink-0">
             <img
               src="/logo.webp"
               alt="MDM Store"
@@ -43,7 +46,7 @@ export default function Header() {
               <span className="text-[16px] md:text-[17px] font-extrabold tracking-tight leading-none text-gray-900 group-hover:opacity-80 transition-opacity duration-300">MDM Store</span>
               <span className="text-[9px] md:text-[10px] text-gray-500 font-semibold tracking-widest mt-0.5">PREMIUM</span>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop Search */}
           <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
@@ -80,9 +83,9 @@ export default function Header() {
                 <span className="text-[13px] font-bold text-[#1d1d1f] max-w-[90px] truncate">{name}</span>
               </button>
             ) : (
-              <button onClick={() => setAuthOpen(true)} className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1d1d1f] text-white hover:bg-black/80 hover:scale-[1.02] transition-all duration-300 btn-press shadow-md">
+              <Link href="/login" className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1d1d1f] text-white hover:bg-black/80 hover:scale-[1.02] transition-all duration-300 btn-press shadow-md">
                 <User className="w-4 h-4" /><span className="text-[13px] font-bold">Đăng nhập</span>
-              </button>
+              </Link>
             )}
           </nav>
         </div>

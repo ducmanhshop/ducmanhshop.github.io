@@ -5,18 +5,20 @@ import { useApp } from '@/context/AppContext';
 import { useModalAnimation } from '@/lib/useModalAnimation';
 import { formatPrice, getCategoryBg } from '@/lib/utils';
 import { Search, SearchX, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function SearchModal() {
-  const { searchOpen, setSearchOpen, products, navigateTo, trackAction } = useApp();
+  const { searchOpen, setSearchOpen, products, trackAction } = useApp();
   const { mounted, active } = useModalAnimation(searchOpen);
   const [term, setTerm] = useState('');
+  const router = useRouter();
 
   const filtered = term.trim() ? products.filter(p => p.name.toLowerCase().includes(term.toLowerCase())) : [];
 
   const goToProduct = (id) => {
     setSearchOpen(false);
     trackAction('click');
-    setTimeout(() => navigateTo('product', id), 300);
+    setTimeout(() => router.push(`/product/${id}`), 300);
   };
 
   if (!mounted) return null;

@@ -1,14 +1,40 @@
 'use client';
 
+import { useParams } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
-import { formatPrice, getCategoryBg } from '@/lib/utils';
-import ProductCard from './ProductCard';
-import { ArrowLeft, Star, Zap, Check, Sparkles, ShoppingCart, ArrowRight } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
+import ProductCard from '@/components/ProductCard';
+import { ArrowLeft, Star, Zap, Check, Sparkles, ShoppingCart } from 'lucide-react';
+import Link from 'next/link';
 
-export default function ProductDetail() {
-  const { products, currentProductId, navigateTo, addToCart, trackAction, setCartOpen, setPaymentOpen, cart, setCart } = useApp();
-  const p = products.find(x => x.id === currentProductId);
-  if (!p) return null;
+export default function ProductPage() {
+  const params = useParams();
+  const { products, addToCart, trackAction, setPaymentOpen, cart, setCart, isLoading } = useApp();
+  const p = products.find(x => x.id === params.id);
+
+  if (isLoading || products.length === 0) {
+    return (
+      <main className="container mx-auto px-4 md:px-6 lg:px-8 pt-24 md:pt-32 pb-12 relative z-10 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-[20px] flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Sparkles className="w-8 h-8 text-gray-300" />
+          </div>
+          <p className="text-gray-500 font-medium">Đang tải sản phẩm...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!p) {
+    return (
+      <main className="container mx-auto px-4 md:px-6 lg:px-8 pt-24 md:pt-32 pb-12 relative z-10 min-h-screen flex flex-col items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-black text-[#1d1d1f] mb-4">Không tìm thấy sản phẩm</h1>
+          <Link href="/" className="px-6 py-3 bg-[#1d1d1f] text-white rounded-full font-bold btn-press shadow-md">Về trang chủ</Link>
+        </div>
+      </main>
+    );
+  }
 
   const discount = Math.round((1 - p.price / p.oldPrice) * 100);
   const seed = p.id.charCodeAt(0) || 1;
@@ -30,10 +56,10 @@ export default function ProductDetail() {
 
   return (
     <main className="container mx-auto px-4 md:px-6 lg:px-8 pt-24 md:pt-32 pb-12 transition-opacity duration-300 relative z-10">
-      <button onClick={() => navigateTo('home')} className="flex items-center gap-2 text-gray-500 hover:text-[#1d1d1f] mb-6 md:mb-8 btn-press font-bold transition-colors w-max">
+      <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-[#1d1d1f] mb-6 md:mb-8 btn-press font-bold transition-colors w-max">
         <div className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center"><ArrowLeft className="w-4 h-4" /></div>
         Quay lại trang chủ
-      </button>
+      </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16">
         <div className="bg-[#F8F8F9] border border-black/[0.02] rounded-[32px] p-8 md:p-16 flex items-center justify-center relative overflow-hidden">

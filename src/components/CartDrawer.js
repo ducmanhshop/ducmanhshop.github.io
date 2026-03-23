@@ -62,7 +62,7 @@ export default function CartDrawer() {
           )}
         </div>
         <div className="p-5 md:p-6 border-t border-black/5 bg-gray-50/80 backdrop-blur safe-bottom">
-          <div className="flex justify-between items-end mb-6">
+          <div className="flex justify-between items-end mb-3">
             <span className="text-gray-500 font-bold text-sm">Tổng cộng</span>
             <span className="text-3xl font-black text-[#1d1d1f] tracking-tighter">{formatPrice(total)}</span>
           </div>

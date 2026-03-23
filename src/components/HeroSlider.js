@@ -66,7 +66,7 @@ export default function HeroSlider() {
   return (
     <section className="mb-10 md:mb-12 relative w-full h-[400px] md:h-[500px] rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgb(0,0,0,0.1)] group border border-black/5">
       {slides.map((slide, i) => (
-        <div key={i} className={`hero-slide absolute inset-0 w-full h-full flex items-center ${i === current ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-105 pointer-events-none'}`}>
+        <div key={i} className={`hero-slide absolute inset-0 w-full h-full flex items-center ${i === current ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[1.03] pointer-events-none'}`}>
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent z-10"></div>
           <img src={slide.image} className="absolute inset-0 w-full h-full object-cover" alt="" />
           <div className="relative z-20 px-8 md:px-16 max-w-2xl">
@@ -80,7 +80,7 @@ export default function HeroSlider() {
         </div>
       ))}
       {/* Dots */}
-      <div className="absolute z-30 bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 items-center">
+      <div className="absolute z-30 bottom-3 left-1/2 -translate-x-1/2 flex gap-2.5 items-center">
         {slides.map((_, i) => (
           <button key={i} onClick={() => goTo(i)} className={`slide-dot rounded-full ${i === current ? 'w-8 h-2.5 bg-white shadow-md' : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/80 backdrop-blur-sm'}`}></button>
         ))}

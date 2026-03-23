@@ -5,16 +5,19 @@ import { useApp } from '@/context/AppContext';
 import { supabaseClient } from '@/lib/supabase';
 import { formatPrice, getTodayStr } from '@/lib/utils';
 import { Store, Users, MousePointerClick, ShoppingBag, DollarSign, BarChart2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function AdminDashboard() {
-  const { navigateTo, isAdmin, showToast } = useApp();
+  const { isAdmin, showToast } = useApp();
+  const router = useRouter();
   const [todayData, setTodayData] = useState({ visits: 0, clicks: 0, orders: 0, revenue: 0 });
   const [weekData, setWeekData] = useState([]);
 
   useEffect(() => {
     if (!isAdmin) {
       showToast("Bạn không có quyền truy cập trang này!");
-      navigateTo('home');
+      router.push('/');
       return;
     }
 
@@ -34,7 +37,7 @@ export default function AdminDashboard() {
       } catch (e) { console.error(e); }
     };
     fetchData();
-  }, [isAdmin, navigateTo, showToast]);
+  }, [isAdmin, router, showToast]);
 
   const maxVisits = weekData.reduce((max, [, d]) => Math.max(max, d.visits), 0);
   const today = getTodayStr();
@@ -46,9 +49,9 @@ export default function AdminDashboard() {
           <h1 className="text-3xl md:text-4xl font-black text-[#1d1d1f] tracking-tighter">Tổng Quan Quản Trị</h1>
           <p className="text-gray-500 font-medium text-sm mt-1">Dữ liệu thống kê hoạt động của website</p>
         </div>
-        <button onClick={() => navigateTo('home')} className="flex items-center gap-2 text-[#1d1d1f] bg-white border border-gray-200 px-5 py-2.5 rounded-full hover:bg-gray-50 btn-press font-bold transition-colors w-max shadow-sm">
+        <Link href="/" className="flex items-center gap-2 text-[#1d1d1f] bg-white border border-gray-200 px-5 py-2.5 rounded-full hover:bg-gray-50 btn-press font-bold transition-colors w-max shadow-sm">
           <Store className="w-4 h-4" /> Quay lại cửa hàng
-        </button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">

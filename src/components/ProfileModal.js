@@ -5,11 +5,14 @@ import { useModalAnimation } from '@/lib/useModalAnimation';
 import { supabaseClient } from '@/lib/supabase';
 import { X, ShoppingBag, User, Settings, LogOut, BarChart3, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function ProfileModal() {
-  const { profileOpen, setProfileOpen, currentUser, isAdmin, setAuthOpen, showToast, checkUser, setCurrentUser, setIsAdmin, navigateTo, setSettingsOpen } = useApp();
+  const { profileOpen, setProfileOpen, currentUser, isAdmin, showToast, checkUser, setCurrentUser, setIsAdmin, setSettingsOpen } = useApp();
   const { mounted, active } = useModalAnimation(profileOpen);
   const [orders, setOrders] = useState([]);
+  const router = useRouter();
 
   const name = currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0] || 'Người dùng';
   const email = currentUser?.email || '';
@@ -31,12 +34,12 @@ export default function ProfileModal() {
     setIsAdmin(false);
     setProfileOpen(false);
     showToast("Đã đăng xuất");
-    setTimeout(() => setAuthOpen(true), 600);
+    setTimeout(() => router.push('/login'), 600);
   };
 
   const goToAdmin = () => {
     setProfileOpen(false);
-    setTimeout(() => navigateTo('admin'), 300);
+    setTimeout(() => router.push('/dashboard'), 300);
   };
 
   const openSettings = () => {
