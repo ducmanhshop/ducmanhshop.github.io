@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useApp } from '@/context/AppContext';
 import { ArrowRight, ShieldCheck, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -43,10 +43,29 @@ const slides = [
 export default function HeroSlider() {
   const { setWarrantyOpen } = useApp();
   const [current, setCurrent] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const trackRef = useRef(null);
 
-  const goTo = useCallback((idx) => setCurrent(idx), []);
-  const next = useCallback(() => setCurrent(p => (p + 1) % slides.length), []);
-  const prev = useCallback(() => setCurrent(p => (p - 1 + slides.length) % slides.length), []);
+  const goTo = useCallback((idx) => {
+    if (isTransitioning || idx === current) return;
+    setIsTransitioning(true);
+    setCurrent(idx);
+    setTimeout(() => setIsTransitioning(false), 700);
+  }, [current, isTransitioning]);
+
+  const next = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrent(p => (p + 1) % slides.length);
+    setTimeout(() => setIsTransitioning(false), 700);
+  }, [isTransitioning]);
+
+  const prev = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrent(p => (p - 1 + slides.length) % slides.length);
+    setTimeout(() => setIsTransitioning(false), 700);
+  }, [isTransitioning]);
 
   useEffect(() => {
     const interval = setInterval(next, 5000);
@@ -65,24 +84,35 @@ export default function HeroSlider() {
 
   return (
     <section className="mb-10 md:mb-12 relative w-full h-[400px] md:h-[500px] rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgb(0,0,0,0.1)] group border border-black/5">
-      {slides.map((slide, i) => (
-        <div key={i} className={`hero-slide absolute inset-0 w-full h-full flex items-center ${i === current ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-[1.03] pointer-events-none'}`}>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent z-10"></div>
-          <img src={slide.image} className="absolute inset-0 w-full h-full object-cover" alt="" />
-          <div className="relative z-20 px-8 md:px-16 max-w-2xl">
-            <span className={`inline-block py-1 px-3.5 rounded-full text-[11px] font-bold border mb-5 backdrop-blur-md tracking-wider ${slide.badgeClass}`}>{slide.badge}</span>
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter leading-[1.1]">{slide.title}</h2>
-            <p className="text-gray-300 text-sm md:text-lg mb-8 font-medium max-w-lg leading-relaxed">{slide.desc}</p>
-            <button onClick={() => handleAction(slide.btnAction)} className={`px-8 py-3.5 rounded-full font-bold transition-transform shadow-lg flex items-center gap-2 btn-press ${slide.btnClass}`}>
-              {slide.btnText} {slide.btnIcon}
-            </button>
+      {/* Slide Track — horizontal translate */}
+      <div
+        ref={trackRef}
+        className="flex h-full"
+        style={{
+          width: `${slides.length * 100}%`,
+          transform: `translate3d(-${current * (100 / slides.length)}%, 0, 0)`,
+          transition: 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)',
+        }}
+      >
+        {slides.map((slide, i) => (
+          <div key={i} className="relative h-full flex items-center" style={{ width: `${100 / slides.length}%` }}>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent z-10"></div>
+            <img src={slide.image} className="absolute inset-0 w-full h-full object-cover" alt="" loading={i === 0 ? 'eager' : 'lazy'} />
+            <div className="relative z-20 px-8 md:px-16 max-w-2xl">
+              <span className={`inline-block py-1 px-3.5 rounded-full text-[11px] font-bold border mb-5 backdrop-blur-md tracking-wider ${slide.badgeClass}`}>{slide.badge}</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter leading-[1.1]">{slide.title}</h2>
+              <p className="text-gray-300 text-sm md:text-lg mb-8 font-medium max-w-lg leading-relaxed">{slide.desc}</p>
+              <button onClick={() => handleAction(slide.btnAction)} className={`px-8 py-3.5 rounded-full font-bold transition-transform shadow-lg flex items-center gap-2 btn-press ${slide.btnClass}`}>
+                {slide.btnText} {slide.btnIcon}
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
       {/* Dots */}
       <div className="absolute z-30 bottom-3 left-1/2 -translate-x-1/2 flex gap-2.5 items-center">
         {slides.map((_, i) => (
-          <button key={i} onClick={() => goTo(i)} className={`slide-dot rounded-full ${i === current ? 'w-8 h-2.5 bg-white shadow-md' : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/80 backdrop-blur-sm'}`}></button>
+          <button key={i} onClick={() => goTo(i)} className={`slide-dot rounded-full transition-all duration-400 ${i === current ? 'w-8 h-2.5 bg-white shadow-md' : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/80 backdrop-blur-sm'}`}></button>
         ))}
       </div>
       {/* Arrows */}
