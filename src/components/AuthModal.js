@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useModalAnimation } from '@/lib/useModalAnimation';
 import { supabaseClient } from '@/lib/supabase';
 import { X } from 'lucide-react';
 
 export default function AuthModal() {
   const { authOpen, setAuthOpen, showToast, checkUser } = useApp();
+  const { mounted, active } = useModalAnimation(authOpen);
   const [isLoginMode, setIsLoginMode] = useState(true);
 
   const handleAuth = async (e) => {
@@ -43,10 +45,12 @@ export default function AuthModal() {
     }
   };
 
+  if (!mounted) return null;
+
   return (
-    <div className={`fixed inset-0 z-[90] flex items-center justify-center p-4 ${authOpen ? '' : 'hidden'}`}>
-      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${authOpen ? 'overlay-visible' : ''}`} onClick={() => setAuthOpen(false)}></div>
-      <div className={`bg-white w-full relative z-10 flex flex-col border border-black/5 shadow-2xl p-8 modal-content-animate modal-center modal-center-sm ${authOpen ? 'open' : ''}`}>
+    <div className={`fixed inset-0 z-[90] flex items-center justify-center p-4`}>
+      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${active ? 'overlay-visible' : ''}`} onClick={() => setAuthOpen(false)}></div>
+      <div className={`bg-white w-full relative z-10 flex flex-col border border-black/5 shadow-2xl p-8 modal-content-animate modal-center modal-center-sm ${active ? 'open' : ''}`}>
         <button onClick={() => setAuthOpen(false)} className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors btn-press z-20">
           <X className="w-4 h-4" />
         </button>

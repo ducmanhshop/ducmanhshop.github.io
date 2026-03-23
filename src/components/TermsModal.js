@@ -1,10 +1,12 @@
 'use client';
 
 import { useApp } from '@/context/AppContext';
+import { useModalAnimation } from '@/lib/useModalAnimation';
 import { X } from 'lucide-react';
 
 export default function TermsModal() {
   const { termsOpen, setTermsOpen } = useApp();
+  const { mounted, active } = useModalAnimation(termsOpen);
 
   const sections = [
     { title: '1. Điều khoản chung', items: ['Khi sử dụng dịch vụ MDM Store, bạn đồng ý tuân thủ các điều khoản dưới đây', 'MDM Store cung cấp các dịch vụ số (tài khoản premium, phần mềm bản quyền)'] },
@@ -13,10 +15,12 @@ export default function TermsModal() {
     { title: '4. Bảo mật thông tin', items: ['Thông tin cá nhân được bảo mật tuyệt đối', 'Không chia sẻ dữ liệu với bên thứ ba', 'Sử dụng kết nối bảo mật (HTTPS) cho mọi giao dịch'] },
   ];
 
+  if (!mounted) return null;
+
   return (
-    <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 ${termsOpen ? '' : 'hidden'}`}>
-      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${termsOpen ? 'overlay-visible' : ''}`} onClick={() => setTermsOpen(false)}></div>
-      <div className={`bg-white w-full max-w-2xl relative z-10 rounded-[28px] flex flex-col max-h-[90vh] border border-black/5 shadow-2xl overflow-hidden modal-content-animate modal-center modal-center-wide ${termsOpen ? 'open' : ''}`}>
+    <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4`}>
+      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${active ? 'overlay-visible' : ''}`} onClick={() => setTermsOpen(false)}></div>
+      <div className={`bg-white w-full max-w-2xl relative z-10 rounded-[28px] flex flex-col max-h-[90vh] border border-black/5 shadow-2xl overflow-hidden modal-content-animate modal-center modal-center-wide ${active ? 'open' : ''}`}>
         <div className="flex items-center justify-between p-6 md:p-8 border-b border-black/5 bg-white/80 backdrop-blur shrink-0">
           <h2 className="text-xl md:text-2xl font-black text-[#1d1d1f] tracking-tight">Điều khoản dịch vụ</h2>
           <button onClick={() => setTermsOpen(false)} className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors btn-press shrink-0">
@@ -25,7 +29,7 @@ export default function TermsModal() {
         </div>
         <div className="p-6 md:p-8 overflow-y-auto space-y-6 text-[#1d1d1f]">
           {sections.map((s, i) => (
-            <div key={i} className="space-y-3">
+            <div key={i} className="space-y-3 modal-item-stagger" style={{ animationDelay: `${i * 80}ms` }}>
               <h3 className="font-bold text-base">{s.title}</h3>
               <ul className="space-y-2.5 text-gray-600 text-sm font-medium">
                 {s.items.map((item, j) => (

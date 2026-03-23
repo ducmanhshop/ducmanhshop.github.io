@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useModalAnimation } from '@/lib/useModalAnimation';
 import { formatPrice, generateOrderId } from '@/lib/utils';
 import { BANK_CONFIG } from '@/lib/config';
 import { X, QrCode, Copy } from 'lucide-react';
 
 export default function PaymentModal() {
   const { paymentOpen, setPaymentOpen, cart, clearCart, showToast, currentUser, trackAction } = useApp();
+  const { mounted, active } = useModalAnimation(paymentOpen);
   const [orderId, setOrderId] = useState('');
 
   const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
@@ -51,10 +53,12 @@ export default function PaymentModal() {
     showToast('Đã gửi xác nhận đơn hàng!');
   };
 
+  if (!mounted) return null;
+
   return (
-    <div className={`fixed inset-0 z-[60] flex items-center justify-center p-4 ${paymentOpen ? '' : 'hidden'}`}>
-      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${paymentOpen ? 'overlay-visible' : ''}`} onClick={() => setPaymentOpen(false)}></div>
-      <div className={`bg-white w-full max-w-md relative z-10 flex flex-col md:rounded-[32px] border border-black/5 modal-content-animate modal-center modal-center-lg ${paymentOpen ? 'open' : ''}`}>
+    <div className={`fixed inset-0 z-[60] flex items-center justify-center p-4`}>
+      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${active ? 'overlay-visible' : ''}`} onClick={() => setPaymentOpen(false)}></div>
+      <div className={`bg-white w-full max-w-md relative z-10 flex flex-col md:rounded-[32px] border border-black/5 modal-content-animate modal-center modal-center-lg ${active ? 'open' : ''}`}>
         <div className="md:hidden pt-2"><div className="sheet-handle"></div></div>
         <div className="p-6 md:p-8 text-center relative border-b border-black/5 overflow-hidden rounded-t-[28px] md:rounded-t-[32px]">
           <button onClick={() => setPaymentOpen(false)} className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors btn-press z-20">

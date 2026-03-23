@@ -1,11 +1,13 @@
 'use client';
 
 import { useApp } from '@/context/AppContext';
+import { useModalAnimation } from '@/lib/useModalAnimation';
 import { supabaseClient } from '@/lib/supabase';
 import { X } from 'lucide-react';
 
 export default function SettingsModal() {
   const { settingsOpen, setSettingsOpen, currentUser, showToast, checkUser } = useApp();
+  const { mounted, active } = useModalAnimation(settingsOpen);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -30,10 +32,12 @@ export default function SettingsModal() {
     }
   };
 
+  if (!mounted) return null;
+
   return (
-    <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 ${settingsOpen ? '' : 'hidden'}`}>
-      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${settingsOpen ? 'overlay-visible' : ''}`} onClick={() => setSettingsOpen(false)}></div>
-      <div className={`bg-white w-full relative z-10 rounded-[28px] p-6 md:p-8 border border-black/5 shadow-2xl modal-content-animate modal-center modal-center-sm ${settingsOpen ? 'open' : ''}`}>
+    <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4`}>
+      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${active ? 'overlay-visible' : ''}`} onClick={() => setSettingsOpen(false)}></div>
+      <div className={`bg-white w-full relative z-10 rounded-[28px] p-6 md:p-8 border border-black/5 shadow-2xl modal-content-animate modal-center modal-center-sm ${active ? 'open' : ''}`}>
         <button onClick={() => setSettingsOpen(false)} className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors btn-press z-20">
           <X className="w-4 h-4" />
         </button>

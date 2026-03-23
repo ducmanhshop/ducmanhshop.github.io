@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { useModalAnimation } from '@/lib/useModalAnimation';
 import { formatPrice, getCategoryBg } from '@/lib/utils';
 import { Search, SearchX, ChevronRight } from 'lucide-react';
 
 export default function SearchModal() {
   const { searchOpen, setSearchOpen, products, navigateTo, trackAction } = useApp();
+  const { mounted, active } = useModalAnimation(searchOpen);
   const [term, setTerm] = useState('');
 
   const filtered = term.trim() ? products.filter(p => p.name.toLowerCase().includes(term.toLowerCase())) : [];
@@ -17,10 +19,12 @@ export default function SearchModal() {
     setTimeout(() => navigateTo('product', id), 300);
   };
 
+  if (!mounted) return null;
+
   return (
-    <div className={`fixed inset-0 z-50 ${searchOpen ? '' : 'hidden'}`}>
-      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${searchOpen ? 'overlay-visible' : ''}`} onClick={() => setSearchOpen(false)}></div>
-      <div className={`bg-white w-full relative z-10 overflow-hidden flex flex-col shadow-2xl border border-black/5 modal-content-animate modal-search ${searchOpen ? 'open' : ''}`}>
+    <div className={`fixed inset-0 z-50`}>
+      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${active ? 'overlay-visible' : ''}`} onClick={() => setSearchOpen(false)}></div>
+      <div className={`bg-white w-full relative z-10 overflow-hidden flex flex-col shadow-2xl border border-black/5 modal-content-animate modal-search ${active ? 'open' : ''}`}>
         <div className="md:hidden pt-2"><div className="sheet-handle"></div></div>
         <div className="p-4 md:p-5 border-b border-black/5">
           <div className="relative">
@@ -45,8 +49,8 @@ export default function SearchModal() {
               <p className="text-sm font-medium">Không tìm thấy kết quả nào</p>
             </div>
           ) : (
-            filtered.map(p => (
-              <div key={p.id} onClick={() => goToProduct(p.id)} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-[16px] cursor-pointer transition-colors border-b border-black/5 last:border-0">
+            filtered.map((p, idx) => (
+              <div key={p.id} onClick={() => goToProduct(p.id)} className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-[16px] cursor-pointer transition-colors border-b border-black/5 last:border-0 modal-item-stagger" style={{ animationDelay: `${idx * 40}ms` }}>
                 <div className={`w-14 h-14 ${getCategoryBg(p.category)} rounded-[12px] p-2 shrink-0 flex items-center justify-center`}>
                   <img src={p.image} className="w-full h-full object-contain" alt={p.name} />
                 </div>

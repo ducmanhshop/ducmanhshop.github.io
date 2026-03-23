@@ -1,15 +1,19 @@
 'use client';
 
 import { useApp } from '@/context/AppContext';
+import { useModalAnimation } from '@/lib/useModalAnimation';
 import { X, HeartHandshake, ArrowRight, MessageCircle } from 'lucide-react';
 
 export default function WelcomeModal() {
   const { welcomeOpen, setWelcomeOpen } = useApp();
+  const { mounted, active } = useModalAnimation(welcomeOpen);
+
+  if (!mounted) return null;
 
   return (
-    <div className={`fixed inset-0 z-[80] flex items-center justify-center p-4 ${welcomeOpen ? '' : 'hidden'}`}>
-      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${welcomeOpen ? 'overlay-visible' : ''}`} onClick={() => setWelcomeOpen(false)}></div>
-      <div className={`bg-white w-full relative z-10 flex flex-col shadow-2xl overflow-y-auto border border-black/5 modal-content-animate modal-center modal-center-welcome ${welcomeOpen ? 'open' : ''}`}>
+    <div className={`fixed inset-0 z-[80] flex items-center justify-center p-4`}>
+      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${active ? 'overlay-visible' : ''}`} onClick={() => setWelcomeOpen(false)}></div>
+      <div className={`bg-white w-full relative z-10 flex flex-col shadow-2xl overflow-y-auto border border-black/5 modal-content-animate modal-center modal-center-welcome ${active ? 'open' : ''}`}>
         <button onClick={() => setWelcomeOpen(false)} className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors btn-press z-20">
           <X className="w-4 h-4" />
         </button>
@@ -30,7 +34,7 @@ export default function WelcomeModal() {
                 'Thông tin tài khoản sẽ được <strong>tự động giao ngay</strong> sau khi bạn hoàn tất thanh toán.',
                 'Nếu cần hỗ trợ, hãy nhắn tin ngay cho đội ngũ CSKH 24/7 của chúng tôi.'
               ].map((text, i) => (
-                <div key={i} className="flex items-start gap-3 md:gap-4">
+                <div key={i} className="flex items-start gap-3 md:gap-4 modal-item-stagger" style={{ animationDelay: `${(i + 1) * 80}ms` }}>
                   <div className="w-6 h-6 rounded-full bg-black/5 text-[#1d1d1f] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">{i + 1}</div>
                   <p className="text-[13px] md:text-sm text-gray-600 leading-relaxed font-medium" dangerouslySetInnerHTML={{ __html: text }}></p>
                 </div>

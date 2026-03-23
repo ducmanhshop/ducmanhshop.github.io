@@ -1,12 +1,14 @@
 'use client';
 
 import { useApp } from '@/context/AppContext';
+import { useModalAnimation } from '@/lib/useModalAnimation';
 import { supabaseClient } from '@/lib/supabase';
 import { X, ShoppingBag, User, Settings, LogOut, BarChart3, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function ProfileModal() {
   const { profileOpen, setProfileOpen, currentUser, isAdmin, setAuthOpen, showToast, checkUser, setCurrentUser, setIsAdmin, navigateTo, setSettingsOpen } = useApp();
+  const { mounted, active } = useModalAnimation(profileOpen);
   const [orders, setOrders] = useState([]);
 
   const name = currentUser?.user_metadata?.full_name || currentUser?.email?.split('@')[0] || 'Người dùng';
@@ -42,12 +44,12 @@ export default function ProfileModal() {
     setTimeout(() => setSettingsOpen(true), 300);
   };
 
-  if (!currentUser) return null;
+  if (!currentUser || !mounted) return null;
 
   return (
-    <div className={`fixed inset-0 z-[90] flex items-center justify-center p-4 ${profileOpen ? '' : 'hidden'}`}>
-      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${profileOpen ? 'overlay-visible' : ''}`} onClick={() => setProfileOpen(false)}></div>
-      <div className={`bg-white w-full relative z-10 rounded-[28px] p-6 md:p-8 border border-black/5 shadow-2xl modal-content-animate modal-center modal-center-md ${profileOpen ? 'open' : ''}`}>
+    <div className={`fixed inset-0 z-[90] flex items-center justify-center p-4`}>
+      <div className={`absolute inset-0 bg-black/60 backdrop-blur-md overlay-base ${active ? 'overlay-visible' : ''}`} onClick={() => setProfileOpen(false)}></div>
+      <div className={`bg-white w-full relative z-10 rounded-[28px] p-6 md:p-8 border border-black/5 shadow-2xl modal-content-animate modal-center modal-center-md ${active ? 'open' : ''}`}>
         <button onClick={() => setProfileOpen(false)} className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors btn-press z-20">
           <X className="w-4 h-4" />
         </button>
@@ -78,7 +80,7 @@ export default function ProfileModal() {
               <div className="text-center py-6 text-[13px] text-gray-400 font-medium bg-gray-50 rounded-[16px] border border-black/5 border-dashed">Chưa có đơn hàng nào</div>
             ) : (
               orders.map((order, i) => (
-                <div key={i} className="bg-white border border-gray-100 p-3.5 rounded-[16px] shadow-sm flex flex-col gap-2 relative overflow-hidden group hover:border-black/10 transition-colors">
+                <div key={i} className="bg-white border border-gray-100 p-3.5 rounded-[16px] shadow-sm flex flex-col gap-2 relative overflow-hidden group hover:border-black/10 transition-colors modal-item-stagger" style={{ animationDelay: `${i * 60}ms` }}>
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-xs text-[#1d1d1f]">#{order.id}</span>
                     <span className="text-[9px] font-bold text-orange-600 bg-orange-100 border border-orange-200 px-2 py-0.5 rounded-full uppercase tracking-wider">{order.status}</span>

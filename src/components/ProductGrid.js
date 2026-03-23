@@ -17,21 +17,15 @@ export default function ProductGrid() {
     p.name.toLowerCase().includes((searchTerm || '').toLowerCase())
   );
 
+  // Reset revealed when filter changes or products load to re-trigger animation
   useEffect(() => {
-    const el = gridRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setRevealed(true);
-          observer.unobserve(el);
-        }
-      },
-      { threshold: 0.05, rootMargin: '0px 0px -40px 0px' }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+    if (products.length === 0) return;
+    setRevealed(false);
+    const timer = setTimeout(() => {
+      setRevealed(true);
+    }, 30);
+    return () => clearTimeout(timer);
+  }, [currentCategory, searchTerm, products.length]);
 
   return (
     <>

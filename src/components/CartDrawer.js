@@ -1,11 +1,13 @@
 'use client';
 
 import { useApp } from '@/context/AppContext';
+import { useModalAnimation } from '@/lib/useModalAnimation';
 import { formatPrice, getCategoryBg } from '@/lib/utils';
 import { X, ShoppingBag, Minus, Plus, ArrowRight } from 'lucide-react';
 
 export default function CartDrawer() {
   const { cart, cartOpen, setCartOpen, changeQty, setPaymentOpen } = useApp();
+  const { mounted, active } = useModalAnimation(cartOpen, 500);
   const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
   const count = cart.reduce((s, i) => s + i.qty, 0);
 
@@ -15,10 +17,12 @@ export default function CartDrawer() {
     setTimeout(() => setPaymentOpen(true), 500);
   };
 
+  if (!mounted) return null;
+
   return (
     <>
-      <div className={`fixed inset-0 bg-black/60 backdrop-blur-md z-50 overlay-base ${cartOpen ? 'overlay-visible' : 'hidden'}`} onClick={() => setCartOpen(false)}></div>
-      <div className={`fixed bg-white shadow-2xl z-50 flex flex-col overflow-hidden border-l border-black/5 modal-content-animate drawer-desktop ${cartOpen ? 'open' : ''}`}>
+      <div className={`fixed inset-0 bg-black/60 backdrop-blur-md z-50 overlay-base ${active ? 'overlay-visible' : ''}`} onClick={() => setCartOpen(false)}></div>
+      <div className={`fixed bg-white shadow-2xl z-50 flex flex-col overflow-hidden border-l border-black/5 modal-content-animate drawer-desktop ${active ? 'open' : ''}`}>
         <div className="md:hidden pt-2"><div className="sheet-handle"></div></div>
         <div className="px-5 py-4 md:px-6 md:py-5 border-b border-black/5 flex justify-between items-center bg-white/50 backdrop-blur">
           <h2 className="text-xl font-black text-[#1d1d1f] tracking-tight">Giỏ hàng</h2>
@@ -36,7 +40,7 @@ export default function CartDrawer() {
             </div>
           ) : (
             cart.map((item, idx) => (
-              <div key={item.id} className="cart-item flex gap-4 p-4 rounded-[24px] bg-white border border-black/5 items-center shadow-sm">
+              <div key={item.id} className="cart-item flex gap-4 p-4 rounded-[24px] bg-white border border-black/5 items-center shadow-sm modal-item-stagger" style={{ animationDelay: `${idx * 50}ms` }}>
                 <div className={`w-16 h-16 ${getCategoryBg(item.category)} rounded-[16px] flex items-center justify-center p-3 shrink-0`}>
                   <img src={item.image} className="w-full h-full object-contain" alt={item.name} />
                 </div>
