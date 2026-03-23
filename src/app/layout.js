@@ -1,7 +1,6 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '@/context/AppContext';
-import SharedLayout from '@/components/SharedLayout';
 import PageLoader from '@/components/PageLoader';
 
 const inter = Inter({
@@ -28,9 +27,7 @@ export default function RootLayout({ children }) {
       <body className={`${inter.variable} font-sans bg-transparent text-[#1d1d1f] antialiased overflow-x-hidden selection:bg-black selection:text-white transition-colors duration-300 relative`}>
         <AppProvider>
           <PageLoader />
-          <SharedLayout>
-            {children}
-          </SharedLayout>
+          {children}
         </AppProvider>
       </body>
     </html>
