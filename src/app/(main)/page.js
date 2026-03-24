@@ -8,7 +8,7 @@ import CTASection from '@/components/CTASection';
 
 export default function Home() {
   return (
-    <main className="container mx-auto px-4 md:px-6 lg:px-8 pt-24 md:pt-32 pb-12 relative z-10 page-enter">
+    <main className="container mx-auto px-4 md:px-6 lg:px-8 pt-24 md:pt-32 pb-12 relative z-10">
       <HeroSlider />
       <ProductGrid />
       <WhyChooseUs />

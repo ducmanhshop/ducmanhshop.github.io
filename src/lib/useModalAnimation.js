@@ -3,17 +3,14 @@
 import { useState, useEffect, useRef } from 'react';
 
 /**
- * Custom hook for smooth modal mount/unmount animations with body scroll lock.
- * 
- * Lifecycle:
- * 1. OPEN: mount → next frame add `open` class → lock body scroll
- * 2. CLOSE: remove `open` class → wait for animation → unmount → unlock body scroll
+ * Custom hook for smooth modal mount/unmount animations.
+ * Simple overflow:hidden approach — no position:fixed, no scroll jump.
  */
 export function useModalAnimation(isOpen, duration = 380) {
   const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState(false);
   const timeoutRef = useRef(null);
-  const scrollYRef = useRef(0);
+  const openCountRef = useRef(0);
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -22,13 +19,10 @@ export function useModalAnimation(isOpen, duration = 380) {
     }
 
     if (isOpen) {
-      // Save scroll position and lock body
-      scrollYRef.current = window.scrollY;
-      document.body.classList.add('modal-open');
-      document.body.style.top = `-${scrollYRef.current}px`;
+      openCountRef.current++;
+      document.documentElement.style.overflow = 'hidden';
       
       setMounted(true);
-      // Double rAF ensures the browser has painted the initial state
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setActive(true);
@@ -36,12 +30,13 @@ export function useModalAnimation(isOpen, duration = 380) {
       });
     } else {
       setActive(false);
+      const capturedCount = openCountRef.current;
       timeoutRef.current = setTimeout(() => {
         setMounted(false);
-        // Unlock body scroll and restore position
-        document.body.classList.remove('modal-open');
-        document.body.style.top = '';
-        window.scrollTo(0, scrollYRef.current);
+        // Only unlock scroll if no other modal opened since
+        if (capturedCount === openCountRef.current) {
+          document.documentElement.style.overflow = '';
+        }
       }, duration);
     }
 
@@ -50,11 +45,9 @@ export function useModalAnimation(isOpen, duration = 380) {
     };
   }, [isOpen, duration]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      document.body.classList.remove('modal-open');
-      document.body.style.top = '';
+      document.documentElement.style.overflow = '';
     };
   }, []);
 
